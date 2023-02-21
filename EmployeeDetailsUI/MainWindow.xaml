@@ -45,9 +45,9 @@
                 <Grid Height="262" Width="100">
                     <Grid.Background>
                         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                            <GradientStop Color="#FF0432FF" Offset="0.416"/>
+                            <GradientStop Color="Gray" Offset="0.416"/>
                             <GradientStop Color="White" Offset="0.064"/>
-                            <GradientStop Color="#FF0432FF" Offset="0.531"/>
+                            <GradientStop Color="Gray" Offset="0.531"/>
                             <GradientStop Color="White" Offset="0.947"/>
                             <GradientStop Color="#FF2E2C2C"/>
                             <GradientStop Color="#FF2E2C2C" Offset="1"/>

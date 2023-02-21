@@ -43,7 +43,7 @@ namespace EmployeeDetailsUI
 
         private void ExitButton_Click(object sender, RoutedEventArgs e)
         {
-
+            CloseProgram();
         }
 
         private void CloseProgram()
