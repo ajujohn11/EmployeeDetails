@@ -35,27 +35,25 @@ namespace EmployeeServices
         public async Task<ApiPagedResult<Employee>> GetEmployeesRequest(ApiRequest apiRequest)
         {
             ApiPagedResult<Employee> pagedResult = new ApiPagedResult<Employee>();
-            
-            var searchParams = new StringBuilder("users");
-            searchParams.AppendFormat("?page={0}&limit={1}", apiRequest.page, apiRequest.limit);
 
+            string searchParams = $"users?page={apiRequest.page}&limit={apiRequest.limit}";
             if (apiRequest.id.HasValue)
-                searchParams.AppendFormat("&id={0}", apiRequest.id.Value);
+                searchParams += $"&id={apiRequest.id.Value}";
 
             if (!string.IsNullOrEmpty(apiRequest.name))
-                searchParams.AppendFormat("&name={0}", apiRequest.name);
+                searchParams += $"&name={apiRequest.name}";
 
             if (!string.IsNullOrEmpty(apiRequest.email))
-                searchParams.AppendFormat("&email={0}", apiRequest.email);
+                searchParams += $"&email={apiRequest.email}";
 
             if (!string.IsNullOrEmpty(apiRequest.gender) && !apiRequest.gender.Equals("all"))
-                searchParams.AppendFormat("&gender={0}", apiRequest.gender);
+                searchParams += $"&gender={apiRequest.gender}";
 
             if (!string.IsNullOrEmpty(apiRequest.status) && !apiRequest.status.Equals("all"))
-                searchParams.AppendFormat("&status={0}", apiRequest.status);
+                searchParams += $"&status={apiRequest.status}";
 
             //Get response from api
-            var response = await _apiClient.GetAsync(searchParams.ToString());
+            var response = await _apiClient.GetAsync(searchParams);
 
             if (response.IsSuccessStatusCode)
             {

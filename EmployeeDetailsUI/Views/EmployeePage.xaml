@@ -13,7 +13,8 @@
                     <RowDefinition Height="50*"/>
                     <RowDefinition Height="100*"/>
                     <RowDefinition Height="327*"/>
-                    <RowDefinition Height="250*"/>
+                    <RowDefinition Height="30*"/>
+                    <RowDefinition Height="210*"/>
                     <RowDefinition Height="64*"/>
                     <RowDefinition Height="11*"/>
                 </Grid.RowDefinitions>
@@ -64,8 +65,8 @@
                           Grid.ColumnSpan="2" ItemsSource="{Binding Path=EmployeesCollection}" 
                           SelectedItem="{Binding Path=SelectedEmployee, Mode=OneWayToSource}" ToolTip="Select employee in grid to Update/Delete">
                 </DataGrid>
-               
-                <Grid Grid.Column="1" Margin="10,0,0,0" Grid.Row="3" Grid.ColumnSpan="2">
+                <Label Content="{Binding Path=PageLabel}" Foreground="Black" Grid.Row="3" Grid.Column="1" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" Grid.ColumnSpan="2"/>
+                <Grid Grid.Column="1" Margin="10,0,0,0" Grid.Row="4" Grid.ColumnSpan="2">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="1*"/>
                         <RowDefinition Height="1*"/>
@@ -93,7 +94,7 @@
                         <ComboBoxItem Content="inactive"></ComboBoxItem>
                     </ComboBox>
                 </Grid>
-                <Grid Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2">
+                <Grid Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="1*"/>

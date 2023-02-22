@@ -175,6 +175,8 @@ namespace EmployeeDetailsUI.UserControls
         {
             var pagedResult = await _employeeService.GetEmployeesRequest(_employeeViewModel.SearchRequest);
             _employeeViewModel.EmployeesCollection = new List<Employee>(pagedResult.data);
+            _employeeViewModel.Paging = pagedResult.meta.pagination;
+            _employeeViewModel.PageLabel = $"Displaying {pagedResult.meta.pagination.page} of {pagedResult.meta.pagination.pages}";
             return pagedResult.data;
         }
 
