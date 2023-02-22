@@ -9,11 +9,12 @@ namespace ApiManager
     /// 
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class ApiPagedResult<T> : ApiResponse
+    public class ApiPagedResult<T> : ApiDataResult<List<T>>
     {
         public Metadata meta { get; set; }
-        public List<T> data { get; set; }
-        public string ErrorData { get; set; }
+
+        //public List<T> data { get; set; }
+        //public string ErrorData { get; set; }
     }
 
     /// <summary>
@@ -22,6 +23,15 @@ namespace ApiManager
     public class Metadata
     {
         public Pageinfo pagination { get; set; }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class ApiDataResult<T> : ApiBaseResponse
+    {
+        public T data { get; set; }
     }
 
 }

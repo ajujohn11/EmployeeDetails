@@ -34,7 +34,7 @@ namespace EmployeeDetailsUI
             services.AddSingleton<MainWindow>();
             services.AddSingleton<EmployeePage>();
             services.AddSingleton<ApiHelper>();
-            services.AddSingleton<ApiResponse>();
+            services.AddSingleton<ApiBaseResponse>();
             services.AddSingleton<ApiRequest>();
             services.AddSingleton<IEmployeeService, EmployeeService>();
         }

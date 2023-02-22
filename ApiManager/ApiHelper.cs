@@ -1,11 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 
 namespace ApiManager
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class ApiHelper
     {
         private readonly HttpClient _apiclient;
@@ -32,7 +33,7 @@ namespace ApiManager
             {
                 BaseAddress = new Uri(_baseUri)
             };
-            _apiclient.DefaultRequestHeaders.Accept.Clear();
+            //_apiclient.DefaultRequestHeaders.Accept.Clear();
             _apiclient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _apiclient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_token}");
         }

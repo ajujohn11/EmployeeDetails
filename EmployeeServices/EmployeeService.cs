@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 
 namespace EmployeeServices
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class EmployeeService : IEmployeeService
     {
         private readonly HttpClient _apiClient;
@@ -25,11 +28,11 @@ namespace EmployeeServices
         }
 
         /// <summary>
-        /// 
+        /// Get
         /// </summary>
         /// <param name="apiRequest"></param>
         /// <returns></returns>
-        public async Task<ApiPagedResult<Employee>> GetEmployeeListRequest(ApiRequest apiRequest)
+        public async Task<ApiPagedResult<Employee>> GetEmployeesRequest(ApiRequest apiRequest)
         {
             ApiPagedResult<Employee> pagedResult = new ApiPagedResult<Employee>();
             
@@ -57,32 +60,44 @@ namespace EmployeeServices
             if (response.IsSuccessStatusCode)
             {
                 var apiResponse = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<ApiResponse>(apiResponse);
+                var result = JsonConvert.DeserializeObject<ApiBaseResponse>(apiResponse);
                 if (result.code != (int)HttpStatusCode.OK)  //Error from api
                 {
                     var errorResponse = JsonConvert.DeserializeObject<ApiError>(apiResponse);
                     var errorData = errorResponse.data.Select(s => $"{ s.field}:{s.message}");
-                    pagedResult.ErrorData = $"Error occured while processing data: {errorData}";
+                    pagedResult.ApiResponseMessage = $"{result.code} : Error occured while processing data: {errorData}";
   
                 }
                 pagedResult = JsonConvert.DeserializeObject<ApiPagedResult<Employee>>(apiResponse);  
             }
             else
             {
-                pagedResult.ErrorData = response.ReasonPhrase;
+                pagedResult.ApiResponseMessage = response.ReasonPhrase;
             }
                 
             return pagedResult;
         }
 
         /// <summary>
-        /// 
+        /// GET by Id
+        /// </summary>
+        /// <param name="employeeId"></param>
+        /// <returns></returns>
+        public async Task<Employee> GetEmployeebyId(int employeeId)
+        {
+            var apiRequest = new ApiRequest { id = employeeId };
+            var employee = await GetEmployeesRequest(apiRequest);
+            return employee.data.FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Post
         /// </summary>
         /// <param name="apiRequest"></param>
         /// <returns></returns>
         public async Task<ApiPagedResult<Employee>> CreateEmployeeRequest(ApiRequest apiRequest)
         {
-            ApiPagedResult<Employee> pagedResult = new ApiPagedResult<Employee>();
+            ApiPagedResult<Employee> pagedResult = new ApiPagedResult<Employee> { data = new List<Employee>() };
 
             //Post data
             var response = await _apiClient.PostAsync("users", new StringContent(JsonConvert.SerializeObject(apiRequest), Encoding.UTF8, "application/json"));
@@ -90,18 +105,95 @@ namespace EmployeeServices
             if (response.IsSuccessStatusCode)
             {
                 var apiResponse = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<ApiResponse>(apiResponse);
+                var result = JsonConvert.DeserializeObject<ApiBaseResponse>(apiResponse);
+                pagedResult.code = result.code;
                 if (result.code != (int)HttpStatusCode.Created)
                 {
                     var errorResponse = JsonConvert.DeserializeObject<ApiError>(apiResponse);
-                    var errorData = errorResponse.data.Select(s => $"{ s.field}:{s.message}");
-                    pagedResult.ErrorData = $"Error occured while processing data: {errorData}";
+                    var errorData = errorResponse.data.Select(s => $"{ s.field}:{s.message}").FirstOrDefault();
+                    pagedResult.ApiResponseMessage = $"{result.code} : Error occured while processing request, {errorData}";
                 }
-                pagedResult = JsonConvert.DeserializeObject<ApiPagedResult<Employee>>(apiResponse);
+                else
+                {
+                    var dataResult = JsonConvert.DeserializeObject<ApiDataResult<Employee>>(apiResponse);
+                    pagedResult.data.Add(dataResult.data);
+                    pagedResult.ApiResponseMessage = $"Employee created successfully";
+                }
             }
             else
             {
-                pagedResult.ErrorData = response.ReasonPhrase;
+                pagedResult.ApiResponseMessage = response.ReasonPhrase;
+            }
+
+            return pagedResult;
+        }
+
+        /// <summary>
+        /// Put
+        /// </summary>
+        /// <param name="apiRequest"></param>
+        /// <returns></returns>
+        public async Task<ApiPagedResult<Employee>> UpdateEmployeeRequest(ApiRequest apiRequest)
+        {
+            ApiPagedResult<Employee> pagedResult = new ApiPagedResult<Employee> { data = new List<Employee>() };
+
+            //Put data
+            var response = await _apiClient.PutAsync($"users/{apiRequest.id}", new StringContent(JsonConvert.SerializeObject(apiRequest), Encoding.UTF8, "application/json"));
+
+            if (response.IsSuccessStatusCode)
+            {
+                var apiResponse = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<ApiBaseResponse>(apiResponse);
+                pagedResult.code = result.code;
+                if (result.code != (int)HttpStatusCode.OK)
+                {
+                    var errorResponse = JsonConvert.DeserializeObject<ApiError>(apiResponse);
+                    var errorData = errorResponse.data.Select(s => $"{ s.field}:{s.message}").FirstOrDefault();
+                    pagedResult.ApiResponseMessage = $"{result.code} : Error occured while processing request, {errorData}";
+                }
+                else
+                {
+                    var dataResult = JsonConvert.DeserializeObject<ApiDataResult<Employee>>(apiResponse);
+                    pagedResult.data.Add(dataResult.data);
+                    pagedResult.ApiResponseMessage = $"Employee updated successfully";
+                }
+            }
+            else
+            {
+                pagedResult.ApiResponseMessage = response.ReasonPhrase;
+            }
+
+            return pagedResult;
+        }
+
+        /// <summary>
+        /// Delete
+        /// </summary>
+        /// <param name="apiRequest"></param>
+        /// <returns></returns>
+        public async Task<ApiPagedResult<Employee>> DeleteEmployeeRequest(ApiRequest apiRequest)
+        {
+            ApiPagedResult<Employee> pagedResult = new ApiPagedResult<Employee>();
+            //Delete Data
+            var response = await _apiClient.DeleteAsync($"users/{apiRequest.id}");
+            if (response.IsSuccessStatusCode)
+            {
+                var apiResponse = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<ApiBaseResponse>(apiResponse);
+                pagedResult.code = result.code;
+                if (result.code != (int)HttpStatusCode.NoContent)
+                {
+                    pagedResult.ApiResponseMessage = $"{result.code} : Error occured while processing delete request.";
+                }
+                else
+                {
+                    pagedResult.ApiResponseMessage = $"Employee deleted successfully";
+                }
+
+            }
+            else
+            {
+                pagedResult.ApiResponseMessage = response.ReasonPhrase;
             }
 
             return pagedResult;

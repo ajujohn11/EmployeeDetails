@@ -4,8 +4,9 @@ using System.Text;
 
 namespace ApiManager
 {
-    public class ApiResponse
+    public class ApiBaseResponse
     {
         public int code { get; set; }
+        public string ApiResponseMessage { get; set; }
     }
 }

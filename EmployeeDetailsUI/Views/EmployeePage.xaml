@@ -40,26 +40,29 @@
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
                     <Label Content="Name:" Grid.Row="0" Grid.Column="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Right"/>
-                    <TextBox Grid.Row="0" Grid.Column="1"  x:Name="NameSearchTextBox" Text="{Binding Path=name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="10" TextWrapping="Wrap"/>
+                    <TextBox Grid.Row="0" Grid.Column="1"  x:Name="NameSearchTextBox" Text="{Binding Path=SearchRequest.name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="10" TextWrapping="Wrap"/>
 
                     <Label Content="Email:" Grid.Row="0" Grid.Column="2" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" />
-                    <TextBox x:Name="EmailSearchTextBox"  Grid.Row="0" Grid.Column="3" Text="{Binding Path=email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="10" TextWrapping="Wrap"/>
+                    <TextBox x:Name="EmailSearchTextBox"  Grid.Row="0" Grid.Column="3" Text="{Binding Path=SearchRequest.email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="10" TextWrapping="Wrap"/>
 
                     <Label Content="Gender:" Grid.Row="0" Grid.Column="4" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" />
-                    <ComboBox x:Name="GenderSearchComboBox" Grid.Row="0" Grid.Column="5" Margin="10" IsEditable="False" Text="{Binding Path=gender, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalContentAlignment="Left" VerticalContentAlignment="Center">
+                    <ComboBox x:Name="GenderSearchComboBox" Grid.Row="0" Grid.Column="5" Margin="10" IsEditable="False" Text="{Binding Path=SearchRequest.gender, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalContentAlignment="Left" VerticalContentAlignment="Center">
                         <ComboBoxItem Content="all"></ComboBoxItem>
                         <ComboBoxItem Content="male"></ComboBoxItem>
                         <ComboBoxItem Content="female"></ComboBoxItem>
                     </ComboBox>
                     <Label Content="Status:" Grid.Row="0" Grid.Column="6" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" />
-                    <ComboBox x:Name="StatusSearchComboBox" Grid.Row="0" Grid.Column="7" Margin="10" IsEditable="False" Text="{Binding Path=status, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" >
+                    <ComboBox x:Name="StatusSearchComboBox" Grid.Row="0" Grid.Column="7" Margin="10" IsEditable="False" Text="{Binding Path=SearchRequest.status, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" >
                         <ComboBoxItem Content="all"></ComboBoxItem>
                         <ComboBoxItem Content="active"></ComboBoxItem>
                         <ComboBoxItem Content="inactive"></ComboBoxItem>
                     </ComboBox>
                     <Button x:Name="SearchEmployeesButton" FontSize="15" Grid.Row="1" Grid.Column="6" Grid.ColumnSpan="7" Content="Search Employees" Click="SearchEmployeesButton_Click" HorizontalAlignment="Right" Width="150" Margin="10"/>
                 </Grid>
-                <DataGrid x:Name="EmployeesGridView" Grid.Column="1" Margin="10,1,10,10" Grid.Row="2" Grid.ColumnSpan="2">
+                <DataGrid CanUserDeleteRows="True" x:Name="EmployeesGridView" Grid.Column="1" Margin="10,1,10,10" Grid.Row="2" 
+                          HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" ColumnWidth="*" ColumnHeaderHeight="40"
+                          Grid.ColumnSpan="2" ItemsSource="{Binding Path=EmployeesCollection}" 
+                          SelectedItem="{Binding Path=SelectedEmployee, Mode=OneWayToSource}" ToolTip="Select employee in grid to Update/Delete">
                 </DataGrid>
                
                 <Grid Grid.Column="1" Margin="10,0,0,0" Grid.Row="3" Grid.ColumnSpan="2">
@@ -79,15 +82,13 @@
                     <Label Content="Email:" FontSize="20" Grid.Column="1" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Row="1"/>
                     <Label Content="Gender:" FontSize="20" Grid.Column="1" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Row="2"/>
                     <Label Content="Status:" FontSize="20" Grid.Column="1" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Grid.Row="3"/>
-                    <TextBox x:Name="NameTextBox" Text="{Binding SelectedItem.name, ElementName=EmployeesGridView}" FontSize="20" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Grid.Column="2" Margin="10" TextWrapping="Wrap"/>
-                    <TextBox x:Name="EmailTextBox" Text="{Binding SelectedItem.email, ElementName=EmployeesGridView}"  FontSize="20" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Grid.Column="2" Margin="10" TextWrapping="Wrap" Grid.Row="1"/>
-                    <ComboBox x:Name="GenderComboBox" Text="{Binding SelectedItem.gender, ElementName=EmployeesGridView}" IsEditable="False" FontSize="20" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Grid.Column="2" Margin="10" Grid.Row="2">
-                        <ComboBoxItem Content="all"></ComboBoxItem>
+                    <TextBox x:Name="NameTextBox" Text="{Binding Path=SelectedEmployee.name}" FontSize="20" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Grid.Column="2" Margin="10" TextWrapping="Wrap"/>
+                    <TextBox x:Name="EmailTextBox" Text="{Binding Path=SelectedEmployee.email}"  FontSize="20" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Grid.Column="2" Margin="10" TextWrapping="Wrap" Grid.Row="1"/>
+                    <ComboBox x:Name="GenderComboBox" Text="{Binding Path=SelectedEmployee.gender}" IsEditable="False" FontSize="20" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Grid.Column="2" Margin="10" Grid.Row="2">
                         <ComboBoxItem Content="male"></ComboBoxItem>
                         <ComboBoxItem Content="female"></ComboBoxItem>
                     </ComboBox>
-                    <ComboBox x:Name="StatusComboBox"  IsEditable="False" Text="{Binding SelectedItem.status,  ElementName=EmployeesGridView}" FontSize="20" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Grid.Column="2" Margin="10" Grid.Row="3">
-                        <ComboBoxItem Content="all"></ComboBoxItem>
+                    <ComboBox x:Name="StatusComboBox"  IsEditable="False" Text="{Binding Path=SelectedEmployee.status}" FontSize="20" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Grid.Column="2" Margin="10" Grid.Row="3">
                         <ComboBoxItem Content="active"></ComboBoxItem>
                         <ComboBoxItem Content="inactive"></ComboBoxItem>
                     </ComboBox>
@@ -102,11 +103,10 @@
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
                     <Label Content="Page:" FontSize="20" Grid.Column="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Right"/>
-                    <TextBox  x:Name="PagesTextBox" Text="{Binding Path=page, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="20" Grid.Column="1" Margin="10" VerticalContentAlignment="Center"/>
-                    <!--<Button x:Name="SearchEmployeesButton" FontSize="20" Content="Search Employees" Grid.Column="1" Margin="10" Click="SearchEmployeesButton_Click"/>-->
-                    <Button x:Name="AddEmployeeButton" FontSize="20" Content="Add Employee" Margin="10" Grid.Column="2" Click="AddEmployeeButton_Click"/>
-                    <Button x:Name="UpdateEmployeeButton" FontSize="20" Content="Update Employee" Grid.Column="3" Margin="10"/>
-                    <Button x:Name="DeleteEmployeeButton" FontSize="20" Content="Delete Employee" Grid.Column="4" Margin="10"/>
+                    <TextBox  x:Name="PagesTextBox" Text="{Binding Path=SearchRequest.page, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="20" Grid.Column="1" Margin="10" VerticalContentAlignment="Center"/>
+                    <Button x:Name="AddEmployeeButton" FontSize="20" Content="Add Employee" Margin="10" Grid.Column="2" Click="AddEmployeeButton_Click" ToolTip="Enter data in above form to add employees"/>
+                    <Button x:Name="UpdateEmployeeButton" FontSize="20" Content="Update Employee" Grid.Column="3" Margin="10" Click="UpdateEmployeeButton_Click" ToolTip="Select employee in grid to Update/Delete"/>
+                    <Button x:Name="DeleteEmployeeButton" FontSize="20" Content="Delete Employee" Grid.Column="4" Margin="10" Click="DeleteEmployeeButton_Click" ToolTip="Select employee in grid to Update/Delete"/>
                 </Grid>
             </Grid>
         </Viewbox>
