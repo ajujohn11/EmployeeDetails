@@ -25,16 +25,10 @@ namespace EmployeeDetailsUI.ViewModels
         #endregion
 
         #region Ctor
-        //public EmployeeViewModel()
-        //{
-        //    _employees = new List<Employee>();
-        //    _searchRequest = new ApiRequest();
-        //    _selectedEmployee = new Employee();
-        //    _paging = new Pageinfo();
-        //    SearchButtonClicked = new RelayCommand(SearchEmployee, p => true);
-        //    CreateButtonClicked = new RelayCommand(AddEmployee, p => true);
-        //}
-
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="employeeService"></param>
         public EmployeeViewModel(IEmployeeService employeeService)
         {
             _employeeService = employeeService;
@@ -45,7 +39,6 @@ namespace EmployeeDetailsUI.ViewModels
             SearchButtonClicked = new RelayCommand(SearchEmployee, p => true);
             CreateButtonClicked = new RelayCommand(AddEmployee, p => true);
         }
-
         #endregion
 
         #region props
@@ -63,13 +56,6 @@ namespace EmployeeDetailsUI.ViewModels
                     PropertyChanged(this, new PropertyChangedEventArgs("EmployeesCollection"));
                 }
             }
-            //set
-            //{
-            //    if (value == _employees) 
-            //        return;
-            //    _employees = value;
-            //    RaisePropertyChanged();
-            //}
         }
         /// <summary>
         /// 
@@ -143,7 +129,7 @@ namespace EmployeeDetailsUI.ViewModels
         public ICommand CreateButtonClicked { get; set; }
         #endregion
 
-        #region Event Methods  
+        #region Events  
         /// <summary>
         /// 
         /// </summary>
@@ -208,8 +194,6 @@ namespace EmployeeDetailsUI.ViewModels
             }
 
             return result.ApiResponseMessage;
-
-            //MessageBox.Show(result.ApiResponseMessage, "Add Employee", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         internal async Task<string> UpdateEmployee()
@@ -225,8 +209,6 @@ namespace EmployeeDetailsUI.ViewModels
 
             var result = await _employeeService.UpdateEmployeeRequest(updateRequest);
             return result.ApiResponseMessage;
-
-            //MessageBox.Show(result.ApiResponseMessage, "Update Employee", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         /// <summary>
@@ -254,12 +236,9 @@ namespace EmployeeDetailsUI.ViewModels
                 }
             }
             return result.ApiResponseMessage;
-            //MessageBox.Show(result.ApiResponseMessage, "Delete Employee", MessageBoxButton.OK, MessageBoxImage.Information);
-
         }
 
         #endregion
-
 
     }
 }

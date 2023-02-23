@@ -48,7 +48,6 @@ namespace EmployeeDetailsUI.UserControls
         {
             InitializeComponent();
 
-
             if (MainWindow.AppWindow?.EmployeeService != null)
                 _employeeService = MainWindow.AppWindow.EmployeeService;
 

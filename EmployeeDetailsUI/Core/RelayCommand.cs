@@ -7,8 +7,8 @@ namespace EmployeeDetailsUI.Core
 {
     public class RelayCommand : ICommand
     {
-        Action<object> _execute;
-        Func<object, bool> _canExecute;
+        readonly Action<object> _execute;
+        readonly Func<object, bool> _canExecute;
 
         public RelayCommand(Action<object> execute, Func<object, bool> canExecute)
         {

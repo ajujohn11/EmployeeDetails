@@ -17,7 +17,7 @@ namespace EmployeeDetailsUI
     /// </summary>
     public partial class App : Application
     {
-        private ServiceProvider serviceProvider;
+        private readonly ServiceProvider serviceProvider;
         public App()
         {
             ServiceCollection services = new ServiceCollection();
