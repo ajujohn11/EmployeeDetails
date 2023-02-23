@@ -105,10 +105,6 @@ namespace EmployeeDetailsUI.UserControls
         {
             if (DataValidation("Create"))
             {
-                if(_employeeViewModel.SelectedEmployee==null)
-                {
-
-                }
                 var apiResponseMessage = await _employeeViewModel.AddEmployee();
                 MessageBox.Show(apiResponseMessage, "Add Employee", MessageBoxButton.OK, MessageBoxImage.Information);
             }
