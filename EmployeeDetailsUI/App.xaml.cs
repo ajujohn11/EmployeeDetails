@@ -32,10 +32,6 @@ namespace EmployeeDetailsUI
         private void ConfigureServices(ServiceCollection services)
         {
             services.AddSingleton<MainWindow>();
-            services.AddSingleton<EmployeePage>();
-            services.AddSingleton<ApiHelper>();
-            services.AddSingleton<ApiBaseResponse>();
-            services.AddSingleton<ApiRequest>();
             services.AddSingleton<IEmployeeService, EmployeeService>();
         }
 

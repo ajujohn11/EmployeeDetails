@@ -63,7 +63,8 @@
                 <DataGrid CanUserDeleteRows="True" x:Name="EmployeesGridView" Grid.Column="1" Margin="10,1,10,10" Grid.Row="2" 
                           HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" ColumnWidth="*" ColumnHeaderHeight="40"
                           Grid.ColumnSpan="2" ItemsSource="{Binding Path=EmployeesCollection}" 
-                          SelectedItem="{Binding Path=SelectedEmployee, Mode=OneWayToSource}" ToolTip="Select employee in grid to Update/Delete">
+                          SelectedItem="{Binding Path=SelectedEmployee}"
+                          ToolTip="Select employee in grid to Update/Delete">
                 </DataGrid>
                 <Label Content="{Binding Path=PageLabel}" Foreground="Black" Grid.Row="3" Grid.Column="1" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" Grid.ColumnSpan="2"/>
                 <Grid Grid.Column="1" Margin="10,0,0,0" Grid.Row="4" Grid.ColumnSpan="2">

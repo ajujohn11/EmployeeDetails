@@ -18,13 +18,18 @@ namespace EmployeeServices
     {
         private readonly HttpClient _apiClient;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="apiHelper"></param>
-        public EmployeeService(ApiHelper apiHelper)
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        ///// <param name="apiHelper"></param>
+        //public EmployeeService(ApiHelper apiHelper)
+        //{
+        //    _apiClient = apiHelper.ApiClient;
+        //}
+
+        public EmployeeService()
         {
-            _apiClient = apiHelper.ApiClient;
+            _apiClient = new ApiHelper().ApiClient;
         }
 
         /// <summary>

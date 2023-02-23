@@ -34,29 +34,51 @@ namespace EmployeeDetailsUI.UserControls
         /// <summary>
         /// 
         /// </summary>
-        BackgroundWorker worker;
+        private readonly EmployeeViewModel _employeeViewModel;
         /// <summary>
         /// 
         /// </summary>
-        EmployeeViewModel _employeeViewModel;
+        BackgroundWorker worker;
+
+        #region Ctor
         /// <summary>
-        /// 
+        /// Ctor
         /// </summary>
         public EmployeePage()
         {
             InitializeComponent();
-            _employeeViewModel = new EmployeeViewModel();
-            _employeeService = new EmployeeService(new ApiHelper());
+
+
+            if (MainWindow.AppWindow?.EmployeeService != null)
+                _employeeService = MainWindow.AppWindow.EmployeeService;
+
+            _employeeViewModel = new EmployeeViewModel(_employeeService);
             this.DataContext = _employeeViewModel;
+        }
+        #endregion
+
+        #region Worker
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void worker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            Task.Run(() => _employeeViewModel.GetEmployeeList());
         }
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="employeeService"></param>
-        public EmployeePage(IEmployeeService employeeService)
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            _employeeService = employeeService;
+            //Add tasks after completion
         }
+        #endregion
+
+        #region Events
         /// <summary>
         /// 
         /// </summary>
@@ -79,31 +101,16 @@ namespace EmployeeDetailsUI.UserControls
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void worker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            Task.Run(() => GetEmployeeList());         
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            //Add tasks after completion
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void AddEmployeeButton_Click(object sender, RoutedEventArgs e)
+        private async void AddEmployeeButton_Click(object sender, RoutedEventArgs e)
         {
             if (DataValidation("Create"))
             {
-                Task.Run(() => AddEmployee());
+                if(_employeeViewModel.SelectedEmployee==null)
+                {
+
+                }
+                var apiResponseMessage = await _employeeViewModel.AddEmployee();
+                MessageBox.Show(apiResponseMessage, "Add Employee", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
         /// <summary>
@@ -111,11 +118,13 @@ namespace EmployeeDetailsUI.UserControls
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void UpdateEmployeeButton_Click(object sender, RoutedEventArgs e)
+        private async void UpdateEmployeeButton_Click(object sender, RoutedEventArgs e)
         {
             if (DataValidation("Update"))
             {
-                Task.Run(() => UpdateEmployee());
+                var apiResponseMessage = await _employeeViewModel.UpdateEmployee();
+                MessageBox.Show(apiResponseMessage, "Update Employee", MessageBoxButton.OK, MessageBoxImage.Information);
+
             }
         }
         /// <summary>
@@ -123,13 +132,18 @@ namespace EmployeeDetailsUI.UserControls
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void DeleteEmployeeButton_Click(object sender, RoutedEventArgs e)
+        private async void DeleteEmployeeButton_Click(object sender, RoutedEventArgs e)
         {
             if (DataValidation("Delete"))
             {
-                Task.Run(() => DeleteEmployee());
+                var apiResponseMessage = await _employeeViewModel.DeleteEmployee();
+                MessageBox.Show(apiResponseMessage, "Delete Employee", MessageBoxButton.OK, MessageBoxImage.Information);
+
             }
         }
+        #endregion
+
+        #region Validation
         /// <summary>
         /// 
         /// </summary>
@@ -139,7 +153,12 @@ namespace EmployeeDetailsUI.UserControls
         {
             bool valid = true;
 
-            if (operation != "Create" &&  (_employeeViewModel.SelectedEmployee ==null || _employeeViewModel.SelectedEmployee.id <= 0))
+            if(_employeeViewModel.SelectedEmployee == null)
+            {
+                MessageBox.Show($"Enter employee details to create, update or delete", $"{operation} Employee", MessageBoxButton.OK, MessageBoxImage.Warning);
+                valid = false;
+            }
+            else if (operation != "Create" &&  _employeeViewModel.SelectedEmployee.id <= 0)
             {
                 MessageBox.Show($"Select an employee to update or delete", $"{operation} Employee", MessageBoxButton.OK, MessageBoxImage.Warning);
                 valid = false;
@@ -166,94 +185,6 @@ namespace EmployeeDetailsUI.UserControls
             }
             return valid;
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        private async Task<List<Employee>> GetEmployeeList()
-        {
-            var pagedResult = await _employeeService.GetEmployeesRequest(_employeeViewModel.SearchRequest);
-            _employeeViewModel.EmployeesCollection = new List<Employee>(pagedResult.data);
-            _employeeViewModel.Paging = pagedResult.meta.pagination;
-            _employeeViewModel.PageLabel = $"Displaying {pagedResult.meta.pagination.page} of {pagedResult.meta.pagination.pages}";
-            return pagedResult.data;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        private async Task AddEmployee()
-        {
-            var createRequest = new ApiRequest
-            {
-                name = _employeeViewModel.SelectedEmployee.name,
-                email = _employeeViewModel.SelectedEmployee.email,
-                gender = _employeeViewModel.SelectedEmployee.gender,
-                status = _employeeViewModel.SelectedEmployee.status
-            };
-
-            var result = await _employeeService.CreateEmployeeRequest(createRequest);
-
-            if (result.code == 201)
-            {
-                var pagedResult = await _employeeService.GetEmployeesRequest(new ApiRequest());
-                _employeeViewModel.EmployeesCollection = new List<Employee>(pagedResult.data);
-            }
-
-            MessageBox.Show(result.ApiResponseMessage, "Add Employee", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        private async Task UpdateEmployee()
-        {
-            var updateRequest = new ApiRequest
-            {
-                id = _employeeViewModel.SelectedEmployee.id,
-                name = _employeeViewModel.SelectedEmployee.name,
-                email = _employeeViewModel.SelectedEmployee.email,
-                gender = _employeeViewModel.SelectedEmployee.gender,
-                status = _employeeViewModel.SelectedEmployee.status
-            };
-
-            var result = await _employeeService.UpdateEmployeeRequest(updateRequest);
-
-            MessageBox.Show(result.ApiResponseMessage, "Update Employee", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        private async Task DeleteEmployee()
-        {
-            var deleteRequest = new ApiRequest
-            {
-                id = _employeeViewModel.SelectedEmployee.id,
-                name = _employeeViewModel.SelectedEmployee.name,
-                email = _employeeViewModel.SelectedEmployee.email,
-                gender = _employeeViewModel.SelectedEmployee.gender,
-                status = _employeeViewModel.SelectedEmployee.status
-            };
-
-            var result = await _employeeService.DeleteEmployeeRequest(deleteRequest);
-
-            if (result.code == 204)
-            {
-                if (_employeeViewModel.EmployeesCollection.Remove(this._employeeViewModel.SelectedEmployee))
-                {
-                    _employeeViewModel.EmployeesCollection = new List<Employee>(_employeeViewModel.EmployeesCollection);
-                }
-            }
-
-            MessageBox.Show(result.ApiResponseMessage, "Delete Employee", MessageBoxButton.OK, MessageBoxImage.Information);
-           
-        }
-
-       
+        #endregion
     }
 }

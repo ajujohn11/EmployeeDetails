@@ -1,5 +1,6 @@
 ﻿using ApiManager;
 using EmployeeDetailsUI.Core;
+using EmployeeServices;
 using Entities;
 using System;
 using System.Collections.Generic;
@@ -7,16 +8,37 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace EmployeeDetailsUI.ViewModels
 {
     public class EmployeeViewModel : INotifyPropertyChanged
     {
+        #region Declaration
+        private List<Employee> _employees;
+        private ApiRequest _searchRequest;
+        private Employee _selectedEmployee;
+        private Pageinfo _paging;
+        private string _pagelabel = $"Displaying 1 of 1";
+        private readonly IEmployeeService _employeeService;
+        #endregion
+
         #region Ctor
-        public EmployeeViewModel()
+        //public EmployeeViewModel()
+        //{
+        //    _employees = new List<Employee>();
+        //    _searchRequest = new ApiRequest();
+        //    _selectedEmployee = new Employee();
+        //    _paging = new Pageinfo();
+        //    SearchButtonClicked = new RelayCommand(SearchEmployee, p => true);
+        //    CreateButtonClicked = new RelayCommand(AddEmployee, p => true);
+        //}
+
+        public EmployeeViewModel(IEmployeeService employeeService)
         {
-            _employees = new List<Employee>();
+            _employeeService = employeeService;
+            _employees = new List<Employee>() { new Employee() { id = 0 } };
             _searchRequest = new ApiRequest();
             _selectedEmployee = new Employee();
             _paging = new Pageinfo();
@@ -27,19 +49,6 @@ namespace EmployeeDetailsUI.ViewModels
         #endregion
 
         #region props
-
-        private List<Employee> _employees;
-        private ApiRequest _searchRequest;
-        private Employee _selectedEmployee;
-        private Pageinfo _paging;
-        private string _pagelabel= $"Displaying 1 of 1";
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void RaisePropertyChanged([CallerMemberName] string propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
         /// <summary>
         /// 
         /// </summary>
@@ -62,12 +71,14 @@ namespace EmployeeDetailsUI.ViewModels
             //    RaisePropertyChanged();
             //}
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public ApiRequest SearchRequest
         {
             get { return _searchRequest; }
-            set 
-            { 
+            set
+            {
                 _searchRequest = value;
                 if (PropertyChanged != null)
                 {
@@ -76,7 +87,9 @@ namespace EmployeeDetailsUI.ViewModels
                 }
             }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public Employee SelectedEmployee
         {
             get { return _selectedEmployee; }
@@ -90,7 +103,6 @@ namespace EmployeeDetailsUI.ViewModels
                 }
             }
         }
-
         /// <summary>
         /// 
         /// </summary>
@@ -106,7 +118,6 @@ namespace EmployeeDetailsUI.ViewModels
                 }
             }
         }
-
         /// <summary>
         /// 
         /// </summary>
@@ -133,17 +144,122 @@ namespace EmployeeDetailsUI.ViewModels
         #endregion
 
         #region Event Methods  
+        /// <summary>
+        /// 
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="propertyName"></param>
+        protected void RaisePropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
         private void SearchEmployee(object value)
         {
             // TO DO: Implement MVVM pattern
         } 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
         private void AddEmployee(object value)
         {
             // TO DO: Implement MVVM pattern
         }
 
         #endregion
+
+        #region Methods
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        internal async Task<List<Employee>> GetEmployeeList()
+        {
+            var pagedResult = await _employeeService.GetEmployeesRequest(this.SearchRequest);
+            this.EmployeesCollection = new List<Employee>(pagedResult.data);
+            this.Paging = pagedResult.meta.pagination;
+            this.PageLabel = $"Displaying Page {pagedResult.meta.pagination.page} of {pagedResult.meta.pagination.pages}";
+            return pagedResult.data;
+        }
+
+        internal async Task<string> AddEmployee()
+        {
+            var createRequest = new ApiRequest
+            {
+                name = this.SelectedEmployee.name,
+                email = this.SelectedEmployee.email,
+                gender = this.SelectedEmployee.gender,
+                status = this.SelectedEmployee.status
+            };
+
+            var result = await _employeeService.CreateEmployeeRequest(createRequest);
+
+            if (result.code == 201)
+            {
+                var pagedResult = await _employeeService.GetEmployeesRequest(new ApiRequest());
+                this.EmployeesCollection = new List<Employee>(pagedResult.data);
+            }
+
+            return result.ApiResponseMessage;
+
+            //MessageBox.Show(result.ApiResponseMessage, "Add Employee", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        internal async Task<string> UpdateEmployee()
+        {
+            var updateRequest = new ApiRequest
+            {
+                id = this.SelectedEmployee.id,
+                name = this.SelectedEmployee.name,
+                email = this.SelectedEmployee.email,
+                gender = this.SelectedEmployee.gender,
+                status = this.SelectedEmployee.status
+            };
+
+            var result = await _employeeService.UpdateEmployeeRequest(updateRequest);
+            return result.ApiResponseMessage;
+
+            //MessageBox.Show(result.ApiResponseMessage, "Update Employee", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        internal async Task<string> DeleteEmployee()
+        {
+            var deleteRequest = new ApiRequest
+            {
+                id = this.SelectedEmployee.id,
+                name = this.SelectedEmployee.name,
+                email = this.SelectedEmployee.email,
+                gender = this.SelectedEmployee.gender,
+                status = this.SelectedEmployee.status
+            };
+
+            var result = await _employeeService.DeleteEmployeeRequest(deleteRequest);
+
+            if (result.code == 204)
+            {
+                if (this.EmployeesCollection.Remove(this.SelectedEmployee))
+                {
+                    this.EmployeesCollection = new List<Employee>(this.EmployeesCollection);
+                }
+            }
+            return result.ApiResponseMessage;
+            //MessageBox.Show(result.ApiResponseMessage, "Delete Employee", MessageBoxButton.OK, MessageBoxImage.Information);
+
+        }
+
+        #endregion
+
 
     }
 }
