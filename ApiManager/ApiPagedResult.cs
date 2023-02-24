@@ -12,9 +12,6 @@ namespace ApiManager
     public class ApiPagedResult<T> : ApiDataResult<List<T>>
     {
         public Metadata meta { get; set; }
-
-        //public List<T> data { get; set; }
-        //public string ErrorData { get; set; }
     }
 
     /// <summary>
