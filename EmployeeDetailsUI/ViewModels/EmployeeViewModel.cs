@@ -172,6 +172,7 @@ namespace EmployeeDetailsUI.ViewModels
             this.EmployeesCollection = new List<Employee>(pagedResult.data);
             this.Paging = pagedResult.meta.pagination;
             this.PageLabel = $"Displaying Page {pagedResult.meta.pagination.page} of {pagedResult.meta.pagination.pages}";
+            this.SearchRequest = SearchRequest;
             return pagedResult.data;
         }
 

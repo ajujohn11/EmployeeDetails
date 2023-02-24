@@ -62,7 +62,7 @@ namespace EmployeeDetailsUI.UserControls
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void worker_DoWork(object sender, DoWorkEventArgs e)
+        void Worker_DoWork(object sender, DoWorkEventArgs e)
         {
             Task.Run(() => _employeeViewModel.GetEmployeeList());
         }
@@ -71,7 +71,7 @@ namespace EmployeeDetailsUI.UserControls
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             //Add tasks after completion
         }
@@ -85,15 +85,22 @@ namespace EmployeeDetailsUI.UserControls
         /// <param name="e"></param>
         private void SearchEmployeesButton_Click(object sender, RoutedEventArgs e)
         {
-
+            Button curButton = (Button)sender;
+            if(curButton.Name.Equals("PrevPageButton"))
+            {
+                if (this._employeeViewModel.SearchRequest.page > 1)
+                    --_employeeViewModel.SearchRequest.page;
+            }
+            else if (curButton.Name.Equals("NextPageButton"))
+            {
+                ++_employeeViewModel.SearchRequest.page;
+            }
             worker = new BackgroundWorker();
-            worker.DoWork += worker_DoWork;
-            worker.RunWorkerCompleted += worker_RunWorkerCompleted;
+            worker.DoWork += Worker_DoWork;
+            worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
             worker.WorkerReportsProgress = true;
             worker.WorkerSupportsCancellation = true;
-
             worker.RunWorkerAsync();
-
         }
         /// <summary>
         /// 

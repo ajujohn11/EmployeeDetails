@@ -42,6 +42,7 @@ namespace EmployeeServices
             ApiPagedResult<Employee> pagedResult = new ApiPagedResult<Employee>();
 
             string searchParams = $"users?page={apiRequest.page}&limit={apiRequest.limit}";
+            ////string searchParams = $"users?page={apiRequest.page}&limit={apiRequest.limit}&per_page={apiRequest.limit}";
             if (apiRequest.id.HasValue)
                 searchParams += $"&id={apiRequest.id.Value}";
 
@@ -57,7 +58,7 @@ namespace EmployeeServices
             if (!string.IsNullOrEmpty(apiRequest.status) && !apiRequest.status.Equals("all"))
                 searchParams += $"&status={apiRequest.status}";
 
-            //Get response from api
+            ////Get response from api
             var response = await _apiClient.GetAsync(searchParams);
 
             if (response.IsSuccessStatusCode)
