@@ -20,7 +20,7 @@ namespace AppUnitTest
         [TestMethod]
         public async Task CreateUserTest()
         {
-            var randomNumber = new System.Random().Next(10000, 100000);
+            var randomNumber = new System.Random().Next(100, 100000);
             var name = $"testname{randomNumber}";
             var email = $"testmail{randomNumber}@mail.com";
             var status = "active";
