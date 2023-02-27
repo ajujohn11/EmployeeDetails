@@ -85,16 +85,16 @@ namespace EmployeeDetailsUI.UserControls
         /// <param name="e"></param>
         private void SearchEmployeesButton_Click(object sender, RoutedEventArgs e)
         {
-            Button curButton = (Button)sender;
-            if(curButton.Name.Equals("PrevPageButton"))
-            {
-                if (this._employeeViewModel.SearchRequest.page > 1)
-                    --_employeeViewModel.SearchRequest.page;
-            }
-            else if (curButton.Name.Equals("NextPageButton"))
-            {
-                ++_employeeViewModel.SearchRequest.page;
-            }
+            //Button curButton = (Button)sender;
+            //if(curButton.Name.Equals("PrevPageButton"))
+            //{
+            //    if (this._employeeViewModel.SearchRequest.page > 1)
+            //        --_employeeViewModel.SearchRequest.page;
+            //}
+            //else if (curButton.Name.Equals("NextPageButton"))
+            //{
+            //    ++_employeeViewModel.SearchRequest.page;
+            //}
             worker = new BackgroundWorker();
             worker.DoWork += Worker_DoWork;
             worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
@@ -143,6 +143,16 @@ namespace EmployeeDetailsUI.UserControls
 
             }
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void PagesTextBox_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (_employeeViewModel != null)
+                Task.Run(() => _employeeViewModel.GetEmployeeList());
+        }
         #endregion
 
         #region Validation
@@ -188,5 +198,7 @@ namespace EmployeeDetailsUI.UserControls
             return valid;
         }
         #endregion
+
+
     }
 }

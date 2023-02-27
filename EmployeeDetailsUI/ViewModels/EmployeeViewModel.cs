@@ -229,12 +229,9 @@ namespace EmployeeDetailsUI.ViewModels
 
             var result = await _employeeService.DeleteEmployeeRequest(deleteRequest);
 
-            if (result.code == 204)
+            if (result.code == 204 && this.EmployeesCollection.Remove(this.SelectedEmployee))
             {
-                if (this.EmployeesCollection.Remove(this.SelectedEmployee))
-                {
-                    this.EmployeesCollection = new List<Employee>(this.EmployeesCollection);
-                }
+                this.EmployeesCollection = new List<Employee>(this.EmployeesCollection);
             }
             return result.ApiResponseMessage;
         }
